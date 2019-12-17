@@ -1,0 +1,47 @@
+{
+  "period": 201801,
+  "period_column": "period",
+  "calculation_type": "movement_calculation_a",
+  "distinct_values": "region, strata",
+  "questions_list": [
+    "Q601_asphalting_sand",
+    "Q602_building_soft_sand",
+    "Q603_concreting_sand",
+    "Q604_bituminous_gravel",
+    "Q605_concreting_gravel",
+    "Q606_other_gravel",
+    "Q607_constructional_fill"
+  ],
+  "disclosivity_marker": "disclosive",
+  "publishable_indicator": "publish",
+  "explanation": "reason",
+  "aggA": {
+    "RuntimeVariables": {
+      "additional_aggregated_column": "region",
+      "aggregated_column": "county",
+      "aggregation_type": "sum",
+      "cell_total_column": "county_total",
+      "total_column": "Q608_total",
+      "period": 201809,
+      "period_column": "period",
+      "top1_column": "largest_contributor",
+      "top2_column": "second_largest_contributor"
+    }
+  },
+  "aggB": {
+    "RuntimeVariables": {
+      "additional_aggregated_column": "region",
+      "aggregated_column": "county",
+      "aggregation_type": "nunique",
+      "cell_total_column": "ent_ref_count",
+      "total_column": "enterprise_ref",
+      "period": 201809,
+      "period_column": "period"
+    }
+  },
+  "total_column": "Q608_total",
+  "parent_column": "ent_ref_count",
+  "top1_column": "largest_contributor",
+  "top2_column": "second_largest_contributor",
+  "threshold": "3"
+}
