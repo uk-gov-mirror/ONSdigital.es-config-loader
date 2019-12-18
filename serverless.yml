@@ -48,3 +48,6 @@ functions:
       config_suffix: _config.json
       survey_arn_prefix: :ES-
       survey_arn_suffix: -Results
+
+plugins:
+  - serverless-latest-layer-version
