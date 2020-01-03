@@ -62,10 +62,11 @@ class TestConfigLoader:
     @mock.patch("config_loader.boto3.client")
     def test_general_error(self, mock_client):
 
+        mock_client.side_effect = Exception("General Error")
+
         returned_value = config_loader.lambda_handler(input_params, None)
 
-        # Not mocking causes the lack of credentials to cause a general error.
-        assert("General Error" in returned_value['error'])
+        assert """General Error""" in returned_value["error"]
 
     @mock.patch("config_loader.boto3.client")
     def test_key_error(self, mock_client):
