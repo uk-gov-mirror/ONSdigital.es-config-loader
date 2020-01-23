@@ -44,7 +44,6 @@ class TestConfigLoader:
             mock_aws_functions.return_value = file.read()
 
         concatenated = config_loader.lambda_handler(input_params, None)
-        print(concatenated)
         assert concatenated["id"]
         assert concatenated["checkpoint"]
 
