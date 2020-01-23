@@ -8,7 +8,7 @@ import config_loader
 input_params = {
     "survey": "BMISG",
     "period": 201809,
-    "id": "01021",
+    "run_id": "01021",
     "checkpoint": 1,
 }
 
@@ -44,7 +44,7 @@ class TestConfigLoader:
             mock_aws_functions.return_value = file.read()
 
         concatenated = config_loader.lambda_handler(input_params, None)
-        assert concatenated["id"]
+        assert concatenated["run_id"]
         assert concatenated["checkpoint"]
 
     def test_creating_survey_arn(self):

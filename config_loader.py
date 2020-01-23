@@ -43,7 +43,7 @@ def lambda_handler(event, context):
         logger.info("Running Config loader")
         # Retrieve run_id before input validation
         # Because it is used in exception handling
-        run_id = event['id']
+        run_id = event['run_id']
 
         client = boto3.client('stepfunctions')
 
