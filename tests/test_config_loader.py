@@ -1,4 +1,7 @@
+import unittest
 import unittest.mock as mock
+
+from es_aws_functions import exception_classes
 
 import config_loader
 
@@ -41,7 +44,7 @@ class TestConfigLoader:
             mock_aws_functions.return_value = file.read()
 
         concatenated = config_loader.lambda_handler(input_params, None)
-
+        print(concatenated)
         assert concatenated["id"]
         assert concatenated["checkpoint"]
 
@@ -63,25 +66,26 @@ class TestConfigLoader:
     def test_general_error(self, mock_client):
 
         mock_client.side_effect = Exception("General Error")
-
-        returned_value = config_loader.lambda_handler(input_params, None)
-
-        assert """General Error""" in returned_value["error"]
+        with unittest.TestCase.assertRaises(
+                self, exception_classes.LambdaFailure) as exc_info:
+            config_loader.lambda_handler(input_params, None)
+        assert "General Error" in exc_info.exception.error_message
 
     @mock.patch("config_loader.boto3.client")
     def test_key_error(self, mock_client):
         mock_client.side_effect = KeyError("Key Error")
-
-        returned_value = config_loader.lambda_handler(input_params, None)
-
-        assert """Key Error""" in returned_value["error"]
+        with unittest.TestCase.assertRaises(
+                self, exception_classes.LambdaFailure) as exc_info:
+            config_loader.lambda_handler(input_params, None)
+        assert "Key Error" in exc_info.exception.error_message
 
     @mock.patch("config_loader.boto3.client")
     def test_missing_environment_variable(self, mock_client):
 
         # Will remove the environment variable from any following tests.
         config_loader.os.environ.pop("bucket_name")
-
-        returned_value = config_loader.lambda_handler(input_params, None)
-
-        assert """Error validating environment parameters""" in returned_value['error']
+        with unittest.TestCase.assertRaises(
+                self, exception_classes.LambdaFailure) as exc_info:
+            config_loader.lambda_handler(input_params, None)
+        assert "Error validating environment parameters" \
+               in exc_info.exception.error_message

@@ -5,7 +5,7 @@ import random
 
 import boto3
 from botocore.exceptions import ClientError
-from es_aws_functions import aws_functions
+from es_aws_functions import aws_functions, exception_classes
 from marshmallow import Schema, fields
 
 
@@ -37,8 +37,13 @@ def lambda_handler(event, context):
     log_message = ""
     logger = logging.getLogger("Config Loader")
     logger.setLevel(10)
+    # Define run_id outside of try block
+    run_id = 0
     try:
         logger.info("Running Config loader")
+        # Retrieve run_id before input validation
+        # Because it is used in exception handling
+        run_id = event['id']
 
         client = boto3.client('stepfunctions')
 
@@ -77,34 +82,39 @@ def lambda_handler(event, context):
         error_message = ("AWS Error in ("
                          + str(e.response["Error"]["Code"]) + ") "
                          + current_module + " |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id))
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
 
     except KeyError as e:
         error_message = ("Key Error in "
                          + current_module + " |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id)
+                         )
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
 
     except ValueError as e:
         error_message = ("Blank or empty environment variable in "
                          + current_module + " |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id))
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
     except Exception as e:
         error_message = ("General Error in "
                          + current_module + " ("
                          + str(type(e)) + ") |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id))
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
     finally:
         if (len(error_message)) > 0:
             logger.error(log_message)
-            return {"success": False, "error": error_message}
+            raise exception_classes.LambdaFailure(error_message)
 
     logger.info("Successfully completed module: " + current_module)
 
