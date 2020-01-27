@@ -70,9 +70,7 @@ def lambda_handler(event, context):
         event['queue_url'] = queue_url
         config_file_name = file_path + event[payload_reference_name] + config_suffix
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
-        print(event)
         combined_input = {**json.loads(config_string), **event}
-        print(combined_input)
         constructed_arn = creating_survey_arn(step_function_arn,
                                               survey,
                                               survey_arn_prefix,
