@@ -42,10 +42,12 @@ class TestConfigLoader:
 
         with open('tests/fixtures/returned_s3_data.json') as file:
             mock_aws_functions.return_value = file.read()
+            with mock.patch("config_loader.create_queue") as mock_create_queue:
+                mock_create_queue.return_value = "NotARealQueueUrl"
 
-        concatenated = config_loader.lambda_handler(input_params, None)
-        assert concatenated["run_id"]
-        assert concatenated["checkpoint"]
+                concatenated = config_loader.lambda_handler(input_params, None)
+                assert concatenated["run_id"]
+                assert concatenated["checkpoint"]
 
     def test_creating_survey_arn(self):
         arn = config_loader.creating_survey_arn("test:arn:", "BMISG", "ES-", "-Results")
@@ -53,13 +55,16 @@ class TestConfigLoader:
 
     @mock.patch("es_aws_functions.aws_functions.read_from_s3")
     @mock.patch("config_loader.boto3.client")
-    def test_passed_vars_overwrite(self, mock_client, mock_aws_functions):
+    def test_passed_vars_overwrite(self, mock_client,
+                                   mock_aws_functions):
         with open('tests/fixtures/returned_s3_data.json') as file:
             mock_aws_functions.return_value = file.read()
+            with mock.patch("config_loader.create_queue") as mock_create_queue:
+                mock_create_queue.return_value = "NotARealQueueUrl"
 
-        concatenated = config_loader.lambda_handler(input_params, None)
+                concatenated = config_loader.lambda_handler(input_params, None)
 
-        assert concatenated["period"] == 201809
+                assert concatenated["period"] == 201809
 
     @mock.patch("config_loader.boto3.client")
     def test_general_error(self, mock_client):
