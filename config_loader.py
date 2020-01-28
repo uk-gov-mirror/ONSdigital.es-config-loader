@@ -146,7 +146,7 @@ def create_queue(survey, run_id):
     sqsclient = boto3.client('sqs')
     queue = sqsclient.\
         create_queue(QueueName=survey + run_id + 'results.fifo',
-                     Attributes={'FifoQueue': 'True'})
+                     Attributes={'FifoQueue': 'True', 'VisibilityTimeout': 40})
     queue_url = queue['QueueUrl']
     # Queue cannot be used for 1 second after creation.
     # Sleep for a short time to prevent error
