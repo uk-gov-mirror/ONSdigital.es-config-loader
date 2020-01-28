@@ -2,10 +2,11 @@ import json
 import logging
 import os
 import random
+import time
 
 import boto3
 from botocore.exceptions import ClientError
-from es_aws_functions import aws_functions
+from es_aws_functions import aws_functions, exception_classes
 from marshmallow import Schema, fields
 
 
@@ -37,8 +38,13 @@ def lambda_handler(event, context):
     log_message = ""
     logger = logging.getLogger("Config Loader")
     logger.setLevel(10)
+    # Define run_id outside of try block
+    run_id = 0
     try:
         logger.info("Running Config loader")
+        # Retrieve run_id before input validation
+        # Because it is used in exception handling
+        run_id = event['run_id']
 
         client = boto3.client('stepfunctions')
 
@@ -55,17 +61,18 @@ def lambda_handler(event, context):
         config_suffix = config['config_suffix']
         survey_arn_prefix = config['survey_arn_prefix']
         survey_arn_suffix = config['survey_arn_suffix']
-
+        survey = event[payload_reference_name]
         logger.info("Validated environment parameters")
+        # Create queue for run
+        queue_url = create_queue(survey, run_id)
 
+        # Add the new queue url to the event to pass downstream
+        event['queue_url'] = queue_url
         config_file_name = file_path + event[payload_reference_name] + config_suffix
-
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
-
         combined_input = {**json.loads(config_string), **event}
-
         constructed_arn = creating_survey_arn(step_function_arn,
-                                              event[payload_reference_name],
+                                              survey,
                                               survey_arn_prefix,
                                               survey_arn_suffix)
 
@@ -77,34 +84,39 @@ def lambda_handler(event, context):
         error_message = ("AWS Error in ("
                          + str(e.response["Error"]["Code"]) + ") "
                          + current_module + " |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id))
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
 
     except KeyError as e:
         error_message = ("Key Error in "
                          + current_module + " |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id)
+                         )
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
 
     except ValueError as e:
         error_message = ("Blank or empty environment variable in "
                          + current_module + " |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id))
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
     except Exception as e:
         error_message = ("General Error in "
                          + current_module + " ("
                          + str(type(e)) + ") |- "
-                         + str(e.args))
+                         + str(e.args)
+                         + " | Run_id: " + str(run_id))
 
         log_message = error_message + " | Line: " + str(e.__traceback__.tb_lineno)
     finally:
         if (len(error_message)) > 0:
             logger.error(log_message)
-            return {"success": False, "error": error_message}
+            raise exception_classes.LambdaFailure(error_message)
 
     logger.info("Successfully completed module: " + current_module)
 
@@ -115,6 +127,28 @@ def creating_survey_arn(arn_segment, survey, prefix, suffix):
     """
     This function is used to construct the step function arn using the provided
     arn_segment and attaches the survey inside of the naming standard format.
+    :param arn_segment: Generic step function address - Type: String
+    :param survey: Current Survey being run - Type: String
+    :param prefix: Prefix for our step function (ES-) - Type: String
+    :param suffix: Suffix for our step function (-Results) - Type: String
     :return String: Specified survey arn
     """
     return arn_segment + prefix + survey + suffix
+
+
+def create_queue(survey, run_id):
+    '''
+    Creates an sqs queue for the results process to use
+    :param survey: Survey to run - Type: String
+    :param run_id: Unique Run id for this run - Type: String
+    :return queue_url: url of the newly created queue - Type: String
+    '''
+    sqsclient = boto3.client('sqs')
+    queue = sqsclient.\
+        create_queue(QueueName=survey + run_id + 'results.fifo',
+                     Attributes={'FifoQueue': 'True'})
+    queue_url = queue['QueueUrl']
+    # Queue cannot be used for 1 second after creation.
+    # Sleep for a short time to prevent error
+    time.sleep(0.7)
+    return queue_url

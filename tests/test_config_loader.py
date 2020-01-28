@@ -1,11 +1,14 @@
+import unittest
 import unittest.mock as mock
+
+from es_aws_functions import exception_classes
 
 import config_loader
 
 input_params = {
     "survey": "BMISG",
     "period": 201809,
-    "id": "01021",
+    "run_id": "01021",
     "checkpoint": 1,
 }
 
@@ -39,11 +42,12 @@ class TestConfigLoader:
 
         with open('tests/fixtures/returned_s3_data.json') as file:
             mock_aws_functions.return_value = file.read()
+            with mock.patch("config_loader.create_queue") as mock_create_queue:
+                mock_create_queue.return_value = "NotARealQueueUrl"
 
-        concatenated = config_loader.lambda_handler(input_params, None)
-
-        assert concatenated["id"]
-        assert concatenated["checkpoint"]
+                concatenated = config_loader.lambda_handler(input_params, None)
+                assert concatenated["run_id"]
+                assert concatenated["checkpoint"]
 
     def test_creating_survey_arn(self):
         arn = config_loader.creating_survey_arn("test:arn:", "BMISG", "ES-", "-Results")
@@ -51,36 +55,41 @@ class TestConfigLoader:
 
     @mock.patch("es_aws_functions.aws_functions.read_from_s3")
     @mock.patch("config_loader.boto3.client")
-    def test_passed_vars_overwrite(self, mock_client, mock_aws_functions):
+    def test_passed_vars_overwrite(self, mock_client,
+                                   mock_aws_functions):
         with open('tests/fixtures/returned_s3_data.json') as file:
             mock_aws_functions.return_value = file.read()
+            with mock.patch("config_loader.create_queue") as mock_create_queue:
+                mock_create_queue.return_value = "NotARealQueueUrl"
 
-        concatenated = config_loader.lambda_handler(input_params, None)
+                concatenated = config_loader.lambda_handler(input_params, None)
 
-        assert concatenated["period"] == 201809
+                assert concatenated["period"] == 201809
 
     @mock.patch("config_loader.boto3.client")
     def test_general_error(self, mock_client):
 
-        returned_value = config_loader.lambda_handler(input_params, None)
-
-        # Not mocking causes the lack of credentials to cause a general error.
-        assert("General Error" in returned_value['error'])
+        mock_client.side_effect = Exception("General Error")
+        with unittest.TestCase.assertRaises(
+                self, exception_classes.LambdaFailure) as exc_info:
+            config_loader.lambda_handler(input_params, None)
+        assert "General Error" in exc_info.exception.error_message
 
     @mock.patch("config_loader.boto3.client")
     def test_key_error(self, mock_client):
         mock_client.side_effect = KeyError("Key Error")
-
-        returned_value = config_loader.lambda_handler(input_params, None)
-
-        assert """Key Error""" in returned_value["error"]
+        with unittest.TestCase.assertRaises(
+                self, exception_classes.LambdaFailure) as exc_info:
+            config_loader.lambda_handler(input_params, None)
+        assert "Key Error" in exc_info.exception.error_message
 
     @mock.patch("config_loader.boto3.client")
     def test_missing_environment_variable(self, mock_client):
 
         # Will remove the environment variable from any following tests.
         config_loader.os.environ.pop("bucket_name")
-
-        returned_value = config_loader.lambda_handler(input_params, None)
-
-        assert """Error validating environment parameters""" in returned_value['error']
+        with unittest.TestCase.assertRaises(
+                self, exception_classes.LambdaFailure) as exc_info:
+            config_loader.lambda_handler(input_params, None)
+        assert "Error validating environment parameters" \
+               in exc_info.exception.error_message
