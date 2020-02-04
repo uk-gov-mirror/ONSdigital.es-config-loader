@@ -66,6 +66,7 @@ def lambda_handler(event, context):
 
         # Append survey to run_id
         run_id = str(survey) + "-" + str(run_id)
+        event['run_id'] = run_id
         # Create queue for run
         queue_url = create_queue(survey, run_id)
 
