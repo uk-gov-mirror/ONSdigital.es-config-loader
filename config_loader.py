@@ -63,9 +63,8 @@ def lambda_handler(event, context):
         survey_arn_suffix = config['survey_arn_suffix']
         survey = event[payload_reference_name]
         logger.info("Validated environment parameters")
+
         # Append survey to run_id
-        from random import randint
-        run_id = randint(100, 999)
         run_id = str(survey) + "-" + str(run_id)
         # Create queue for run
         queue_url = create_queue(survey, run_id)
