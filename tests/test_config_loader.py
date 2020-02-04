@@ -45,9 +45,8 @@ class TestConfigLoader:
             with mock.patch("config_loader.create_queue") as mock_create_queue:
                 mock_create_queue.return_value = "NotARealQueueUrl"
 
-                concatenated = config_loader.lambda_handler(input_params, None)
-                assert concatenated["run_id"]
-                assert concatenated["checkpoint"]
+                output = config_loader.lambda_handler(input_params, None)
+                "done" in output
 
     def test_creating_survey_arn(self):
         arn = config_loader.creating_survey_arn("test:arn:", "BMISG", "ES-", "-Results")
@@ -62,9 +61,9 @@ class TestConfigLoader:
             with mock.patch("config_loader.create_queue") as mock_create_queue:
                 mock_create_queue.return_value = "NotARealQueueUrl"
 
-                concatenated = config_loader.lambda_handler(input_params, None)
+                output = config_loader.lambda_handler(input_params, None)
 
-                assert concatenated["period"] == 201809
+                "done" in output
 
     @mock.patch("config_loader.boto3.client")
     def test_general_error(self, mock_client):

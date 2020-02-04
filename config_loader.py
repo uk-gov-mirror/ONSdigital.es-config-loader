@@ -124,7 +124,7 @@ def lambda_handler(event, context):
 
     logger.info("Successfully completed module: " + current_module)
 
-    return combined_input
+    return "done"
 
 
 def creating_survey_arn(arn_segment, survey, prefix, suffix):
