@@ -68,7 +68,7 @@ def lambda_handler(event, context):
         run_id = str(survey) + "-" + str(run_id)
         event['run_id'] = run_id
         # Create queue for run
-        queue_url = create_queue(survey, run_id)
+        queue_url = create_queue(run_id)
 
         # Add the new queue url to the event to pass downstream
         event['queue_url'] = queue_url
@@ -140,16 +140,15 @@ def creating_survey_arn(arn_segment, survey, prefix, suffix):
     return arn_segment + prefix + survey + suffix
 
 
-def create_queue(survey, run_id):
+def create_queue(run_id):
     '''
-    Creates an sqs queue for the results process to use
-    :param survey: Survey to run - Type: String
+    Creates an sqs queue for the results process to use.
     :param run_id: Unique Run id for this run - Type: String
     :return queue_url: url of the newly created queue - Type: String
     '''
     sqsclient = boto3.client('sqs')
     queue = sqsclient.\
-        create_queue(QueueName=survey + run_id + 'results.fifo',
+        create_queue(QueueName=run_id + 'results.fifo',
                      Attributes={'FifoQueue': 'True', 'VisibilityTimeout': '40'})
     queue_url = queue['QueueUrl']
     # Queue cannot be used for 1 second after creation.
