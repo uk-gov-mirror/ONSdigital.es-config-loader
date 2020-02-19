@@ -84,7 +84,7 @@ def lambda_handler(event, context):
                                               survey_arn_suffix)
 
         # replace file for first checkpoint
-        if 'checkpoint_file' in event:
+        if 'checkpoint_file' in combined_input:
             combined_input = set_checkpoint_start_file(combined_input['checkpoint_file'],
                                                        combined_input['checkpoint'],
                                                        combined_input)
