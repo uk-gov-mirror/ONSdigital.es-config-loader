@@ -150,11 +150,11 @@ def creating_survey_arn(arn_segment, survey, prefix, suffix):
 
 
 def create_queue(run_id):
-    '''
+    """
     Creates an sqs queue for the results process to use.
     :param run_id: Unique Run id for this run - Type: String
     :return queue_url: url of the newly created queue - Type: String
-    '''
+    """
     sqsclient = boto3.client('sqs')
     queue = sqsclient.\
         create_queue(QueueName=run_id + 'results.fifo',
@@ -167,7 +167,7 @@ def create_queue(run_id):
 
 
 def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
-    '''
+    """
     If a checkpoint_file is set, changes the "in_file_name" section of the config to
     point at a checkpointed file instead of the default.
     :param checkpoint_file: The name of the file to load instead of the default
@@ -176,7 +176,7 @@ def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
     :param config: the current config to be altered - Type: String/JSON
     :return config: a version of the config with the "in_file_name" section altered
         - Type: String/JSON
-    '''
+    """
 
     if checkpoint_file is not None and checkpoint_file != "":
 
