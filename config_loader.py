@@ -169,7 +169,7 @@ def create_queue(run_id):
 def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
     '''
     If a checkpoint_file is set, changes the "in_file_name" section of the config to
-    point at a checkpointed file instead of the deafualt.
+    point at a checkpointed file instead of the default.
     :param checkpoint_file: The name of the file to load instead of the default
         - Type: Sting
     :param checkpoint_id: id of the checkpoint to restart from - Type: int
