@@ -67,11 +67,14 @@ def lambda_handler(event, context):
         # Append survey to run_id
         run_id = str(survey) + "-" + str(run_id)
         event['run_id'] = run_id
+
         # Create queue for run
         queue_url = create_queue(survey, run_id)
 
         # Add the new queue url to the event to pass downstream
         event['queue_url'] = queue_url
+
+        # get rest of the config from s3
         config_file_name = file_path + event[payload_reference_name] + config_suffix
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
         combined_input = {**json.loads(config_string), **event}
@@ -80,6 +83,12 @@ def lambda_handler(event, context):
                                               survey_arn_prefix,
                                               survey_arn_suffix)
 
+        # replace file for first checkpoint
+        if 'checkpoint_file' in event:
+            combined_input = set_checkpoint_start_file(combined_input['checkpoint_file'],
+                                                       combined_input['checkpoint'],
+                                                       combined_input)
+           
         client.start_execution(stateMachineArn=constructed_arn,
                                name=str(random.getrandbits(128)),
                                input=json.dumps(combined_input))
@@ -156,3 +165,32 @@ def create_queue(survey, run_id):
     # Sleep for a short time to prevent error
     time.sleep(0.7)
     return queue_url
+
+def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
+    '''
+    If a checkpoint_file is set, changes the "in_file_name" section of the config to 
+    point at a checkpointed file instead of the deafualt.
+    :param checkpoint_file: The name of the file to load instead of the default 
+        - Type: Sting
+    :param checkpoint_id: id of the checkpoint to restart from - Type: int
+    :param config: the current config to be altered - Type: String/JSON
+    :return config: a version of the config with the "in_file_name" section altered 
+        - Type: String/JSON
+    '''
+
+    if checkpoint_file is not None and checkpoint_file != "":
+
+        if checkpoint_id == 0:
+            config["in_file_name"]["ingest"] = checkpoint_file
+        elif checkpoint_id == 1:
+            config["in_file_name"]["enrichment"] = checkpoint_file
+        elif checkpoint_id == 2:
+            config["in_file_name"]["strata"] = checkpoint_file
+        elif checkpoint_id == 3:
+            config["in_file_name"]["imputation_movement"] = checkpoint_file
+        elif checkpoint_id == 4:
+            config["in_file_name"]["aggregation_by_column"][0] = checkpoint_file
+        elif checkpoint_id == 5:
+            config["in_file_name"]["disclosure"] = checkpoint_file
+
+        return config
