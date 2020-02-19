@@ -193,4 +193,4 @@ def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
         elif checkpoint_id == 5:
             config["in_file_name"]["disclosure"] = checkpoint_file
 
-        return config
+    return config
