@@ -88,7 +88,7 @@ def lambda_handler(event, context):
             combined_input = set_checkpoint_start_file(combined_input['checkpoint_file'],
                                                        combined_input['checkpoint'],
                                                        combined_input)
-           
+
         client.start_execution(stateMachineArn=constructed_arn,
                                name=str(random.getrandbits(128)),
                                input=json.dumps(combined_input))
@@ -166,15 +166,16 @@ def create_queue(survey, run_id):
     time.sleep(0.7)
     return queue_url
 
+
 def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
     '''
-    If a checkpoint_file is set, changes the "in_file_name" section of the config to 
+    If a checkpoint_file is set, changes the "in_file_name" section of the config to
     point at a checkpointed file instead of the deafualt.
-    :param checkpoint_file: The name of the file to load instead of the default 
+    :param checkpoint_file: The name of the file to load instead of the default
         - Type: Sting
     :param checkpoint_id: id of the checkpoint to restart from - Type: int
     :param config: the current config to be altered - Type: String/JSON
-    :return config: a version of the config with the "in_file_name" section altered 
+    :return config: a version of the config with the "in_file_name" section altered
         - Type: String/JSON
     '''
 
