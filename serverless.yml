@@ -44,7 +44,7 @@ functions:
       step_function_arn: arn:aws:states:eu-west-2:${self:custom.accountId}:stateMachine
       file_path: configs/
       payload_reference_name: survey
-      config_suffix: _config.json
+      config_suffix: _config
       survey_arn_prefix: :ES-
       survey_arn_suffix: -Results
 
