@@ -181,16 +181,16 @@ def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
     if checkpoint_file is not None and checkpoint_file != "":
 
         if checkpoint_id == 0:
-            config["in_file_name"]["ingest"] = checkpoint_file
+            config["file_names"]["input_file"] = checkpoint_file
         elif checkpoint_id == 1:
-            config["in_file_name"]["enrichment"] = checkpoint_file
+            config["file_names"]["ingest"] = checkpoint_file
         elif checkpoint_id == 2:
-            config["in_file_name"]["strata"] = checkpoint_file
+            config["file_names"]["enrichment"] = checkpoint_file
         elif checkpoint_id == 3:
-            config["in_file_name"]["imputation_movement"] = checkpoint_file
+            config["file_names"]["strata"] = checkpoint_file
         elif checkpoint_id == 4:
-            config["in_file_name"]["aggregation_by_column"][0] = checkpoint_file
+            config["file_names"]["imputation_apply_factors"] = checkpoint_file
         elif checkpoint_id == 5:
-            config["in_file_name"]["disclosure"] = checkpoint_file
+            config["file_names"]["aggregation_combiner"] = checkpoint_file
 
     return config
