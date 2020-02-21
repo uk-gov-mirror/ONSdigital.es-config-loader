@@ -157,7 +157,7 @@ def create_queue(run_id):
     """
     sqsclient = boto3.client('sqs')
     queue = sqsclient.\
-        create_queue(QueueName=run_id + 'results.fifo',
+        create_queue(QueueName=run_id + '-results.fifo',
                      Attributes={'FifoQueue': 'True', 'VisibilityTimeout': '40'})
     queue_url = queue['QueueUrl']
     # Queue cannot be used for 1 second after creation.
