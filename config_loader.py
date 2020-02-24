@@ -81,7 +81,7 @@ def lambda_handler(event, context):
         combined_input = {**json.loads(config_string), **event}
 
         # Setting File Path.
-        combined_input["location"] = combined_input["location"] + folder_id + "\\"
+        combined_input["location"] = combined_input["location"] + folder_id + "/"
 
         # ARN For SQS Queue.
         constructed_arn = creating_survey_arn(step_function_arn,
