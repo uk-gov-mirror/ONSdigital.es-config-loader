@@ -15,6 +15,7 @@
   "disclosivity_marker": "disclosive",
   "publishable_indicator": "publish",
   "explanation": "reason",
+  "location": "Here",
   "aggA": {
     "RuntimeVariables": {
       "additional_aggregated_column": "region",
