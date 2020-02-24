@@ -79,10 +79,6 @@ def lambda_handler(event, context):
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
         combined_input = {**json.loads(config_string), **event}
 
-        # Setting File Path.
-        combined_input["location"] = combined_input["location"] +\
-            combined_input['run_id'] + "\\" + combined_input['run_id']
-
         # ARN For SQS Queue.
         constructed_arn = creating_survey_arn(step_function_arn,
                                               survey,
