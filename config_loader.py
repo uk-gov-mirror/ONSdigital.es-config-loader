@@ -45,6 +45,7 @@ def lambda_handler(event, context):
         # Retrieve run_id before input validation.
         # Because it is used in exception handling.
         run_id = event['run_id']
+        folder_id = event['run_id']
 
         client = boto3.client('stepfunctions')
 
@@ -80,8 +81,7 @@ def lambda_handler(event, context):
         combined_input = {**json.loads(config_string), **event}
 
         # Setting File Path.
-        combined_input["location"] = combined_input["location"] +\
-            combined_input['run_id'] + "\\"
+        combined_input["location"] = combined_input["location"] + folder_id + "\\"
 
         # ARN For SQS Queue.
         constructed_arn = creating_survey_arn(step_function_arn,
