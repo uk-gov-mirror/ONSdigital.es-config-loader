@@ -38,17 +38,17 @@ def lambda_handler(event, context):
     log_message = ""
     logger = logging.getLogger("Config Loader")
     logger.setLevel(10)
-    # Define run_id outside of try block
+    # Define run_id outside of try block.
     run_id = 0
     try:
         logger.info("Running Config loader")
-        # Retrieve run_id before input validation
-        # Because it is used in exception handling
+        # Retrieve run_id before input validation.
+        # Because it is used in exception handling.
         run_id = event['run_id']
 
         client = boto3.client('stepfunctions')
 
-        # Initialising environment variables
+        # Initialising environment variables.
         schema = InputSchema()
         config, errors = schema.load(os.environ)
         if errors:
@@ -64,26 +64,32 @@ def lambda_handler(event, context):
         survey = event[payload_reference_name]
         logger.info("Validated environment parameters")
 
-        # Append survey to run_id
+        # Append survey to run_id.
         run_id = str(survey) + "-" + str(run_id)
         event['run_id'] = run_id
 
-        # Create queue for run
+        # Create queue for run.
         queue_url = create_queue(run_id)
 
-        # Add the new queue url to the event to pass downstream
+        # Add the new queue url to the event to pass downstream.
         event['queue_url'] = queue_url
 
-        # get rest of the config from s3
+        # Get the rest of the config from s3.
         config_file_name = file_path + event[payload_reference_name] + config_suffix
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
         combined_input = {**json.loads(config_string), **event}
+
+        # Setting File Path.
+        combined_input["location"] = combined_input["location"] +\
+            combined_input['run_id'] + "\\" + combined_input['run_id']
+
+        # ARN For SQS Queue.
         constructed_arn = creating_survey_arn(step_function_arn,
                                               survey,
                                               survey_arn_prefix,
                                               survey_arn_suffix)
 
-        # replace file for first checkpoint
+        # Replace file for first checkpoint.
         if 'checkpoint_file' in combined_input:
             combined_input = set_checkpoint_start_file(combined_input['checkpoint_file'],
                                                        combined_input['checkpoint'],
@@ -161,7 +167,7 @@ def create_queue(run_id):
                      Attributes={'FifoQueue': 'True', 'VisibilityTimeout': '40'})
     queue_url = queue['QueueUrl']
     # Queue cannot be used for 1 second after creation.
-    # Sleep for a short time to prevent error
+    # Sleep for a short time to prevent error.
     time.sleep(0.7)
     return queue_url
 
