@@ -21,7 +21,7 @@ provider:
     individually: true
 
 custom:
-  accounts: ${ssm:/aws/reference/secretsmanager/results-aws-accounts~true}
+  accounts: ${env:aws_account_id}
   accountId: ${self:custom.accounts.account-id}
 
 functions:
