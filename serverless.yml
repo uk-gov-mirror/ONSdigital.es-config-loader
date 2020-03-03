@@ -2,8 +2,6 @@
 service: es-config-loader
 provider:
   name: aws
-  deploymentBucket:
-    name: com.serverless.${self:provider.region}.results.ons.deploys
   role: arn:aws:iam::${self:custom.accountId}:role/lambda_invoke_lambda
   vpc:
     securityGroupIds:
