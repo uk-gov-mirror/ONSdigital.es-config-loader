@@ -21,8 +21,7 @@ provider:
     individually: true
 
 custom:
-  accounts: ${env:aws_account_id}
-  accountId: ${self:custom.accounts.account-id}
+  accountId: ${env:aws_account_id}
 
 functions:
   deploy-config-loader:
