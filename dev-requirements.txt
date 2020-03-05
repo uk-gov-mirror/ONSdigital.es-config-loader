@@ -106,4 +106,4 @@ wrapt==1.11.1
 xmltodict==0.12.0
 yamllint==1.20.0
 zipp==0.5.1
-git+https://github.com/ONSdigital/es-aws-functions.git
+git+https://github.com/ONSdigital/es-functions.git
