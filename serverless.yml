@@ -2,6 +2,8 @@
 service: es-config-loader
 provider:
   name: aws
+  deploymentBucket:
+    name: spp-results-sandbox-serverless
   role: arn:aws:iam::${self:custom.accountId}:role/lambda_invoke_lambda
   vpc:
     securityGroupIds:
