@@ -3,7 +3,7 @@ service: es-config-loader
 provider:
   name: aws
   deploymentBucket:
-    name: com.serverless.${self:provider.region}.results.ons.deploys
+    name: spp-results-sandbox-serverless
   role: arn:aws:iam::${self:custom.accountId}:role/lambda_invoke_lambda
   vpc:
     securityGroupIds:
@@ -21,8 +21,7 @@ provider:
     individually: true
 
 custom:
-  accounts: ${ssm:/aws/reference/secretsmanager/results-aws-accounts~true}
-  accountId: ${self:custom.accounts.account-id}
+  accountId: ${env:aws_account_id}
 
 functions:
   deploy-config-loader:
@@ -40,7 +39,7 @@ functions:
     tags:
       app: results
     environment:
-      bucket_name: results-s3-bucket
+      bucket_name: spp-results-sandbox
       step_function_arn: arn:aws:states:eu-west-2:${self:custom.accountId}:stateMachine
       file_path: configs/
       payload_reference_name: survey
