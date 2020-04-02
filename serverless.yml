@@ -4,7 +4,7 @@ provider:
   name: aws
   deploymentBucket:
     name: spp-results-sandbox-serverless
-  role: arn:aws:iam::${self:custom.accountId}:role/lambda_invoke_lambda
+  role: arn:aws:iam::#{AWS::AccountId}:role/lambda_invoke_lambda
   vpc:
     securityGroupIds:
       - ${file(../json_outputs/security_groups_output.json):SecurityGroups.0.GroupId}
@@ -34,13 +34,13 @@ functions:
       exclude:
         - ./**
     layers:
-      - arn:aws:lambda:eu-west-2:${self:custom.accountId}:layer:es_python_layer:latest
-      - arn:aws:lambda:eu-west-2:${self:custom.accountId}:layer:dev-es-common-functions:latest
+      - arn:aws:lambda:eu-west-2:#{AWS::AccountId}:layer:es_python_layer:latest
+      - arn:aws:lambda:eu-west-2:#{AWS::AccountId}:layer:dev-es-common-functions:latest
     tags:
       app: results
     environment:
       bucket_name: spp-results-sandbox
-      step_function_arn: arn:aws:states:eu-west-2:${self:custom.accountId}:stateMachine
+      step_function_arn: arn:aws:states:eu-west-2:#{AWS::AccountId}:stateMachine
       file_path: configs/
       payload_reference_name: survey
       config_suffix: _config
