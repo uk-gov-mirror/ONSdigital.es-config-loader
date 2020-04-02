@@ -21,7 +21,7 @@ provider:
     individually: true
 
 custom:
-  accountId: ${env:aws_account_id}
+  accountId: #{AWS::AccountId}
 
 functions:
   deploy-config-loader:
@@ -49,3 +49,4 @@ functions:
 
 plugins:
   - serverless-latest-layer-version
+  - serverless-pseudo-parameters
