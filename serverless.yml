@@ -4,7 +4,6 @@ provider:
   name: aws
   deploymentBucket:
     name: spp-results-${self:custom.environment}-serverless
-  role: arn:aws:iam::#{AWS::AccountId}:role/lambda_invoke_lambda
   vpc:
     securityGroupIds:
       - ${file(../json_outputs/security_groups_output.json):SecurityGroups.0.GroupId}
@@ -27,6 +26,7 @@ functions:
   deploy-config-loader:
     name: es-config-loader
     handler: config_loader.lambda_handler
+    role: arn:aws:iam::#{AWS::AccountId}:role/lambda_invoke_lambda
     package:
       individually: true
       include:
