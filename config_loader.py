@@ -82,7 +82,7 @@ def lambda_handler(event, context):
         combined_input["location"] = combined_input["location"] + folder_id + "/"
 
         # ARN For SQS Queue.
-        constructed_arn = creating_survey_arn(step_function_arn,
+        constructed_arn = creating_survey_arn(creating_step_arn(step_function_arn),
                                               survey,
                                               survey_arn_prefix,
                                               survey_arn_suffix)
@@ -108,6 +108,19 @@ def lambda_handler(event, context):
     logger.info("Successfully completed module: " + current_module)
 
     return "done"
+
+
+def creating_step_arn(arn_segment):
+    """
+    This function will insert the account id into the arn used to reference the step
+    function.
+    :param arn_segment: Generic step function address - Type: String
+    :return String: Step Function arn with the correct account_id added
+    """
+    account_id = boto3.client('sts').get_caller_identity().get('Account')
+    arn_segment = arn_segment.replace("#{AWS::AccountId}", account_id)
+
+    return arn_segment
 
 
 def creating_survey_arn(arn_segment, survey, prefix, suffix):
