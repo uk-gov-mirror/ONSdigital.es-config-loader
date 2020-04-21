@@ -44,9 +44,10 @@ class TestConfigLoader:
             mock_aws_functions.return_value = file.read()
             with mock.patch("config_loader.create_queue") as mock_create_queue:
                 mock_create_queue.return_value = "NotARealQueueUrl"
-
-                output = config_loader.lambda_handler(input_params, None)
-                "done" in output
+                with mock.patch("config_loader.creating_step_arn") as mock_step_arn:
+                    mock_step_arn.return_Value = "1234"
+                    output = config_loader.lambda_handler(input_params, None)
+                    "done" in output
 
     def test_creating_survey_arn(self):
         arn = config_loader.creating_survey_arn("test:arn:", "BMISG", "ES-", "-Results")
@@ -60,10 +61,10 @@ class TestConfigLoader:
             mock_aws_functions.return_value = file.read()
             with mock.patch("config_loader.create_queue") as mock_create_queue:
                 mock_create_queue.return_value = "NotARealQueueUrl"
-
-                output = config_loader.lambda_handler(input_params, None)
-
-                "done" in output
+                with mock.patch("config_loader.creating_step_arn") as mock_step_arn:
+                    mock_step_arn.return_Value = "1234"
+                    output = config_loader.lambda_handler(input_params, None)
+                    "done" in output
 
     @mock.patch("config_loader.boto3.client")
     def test_general_error(self, mock_client):

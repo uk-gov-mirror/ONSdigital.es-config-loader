@@ -43,7 +43,8 @@ payload passed in.
     payload_reference_name: The name of the refrenced used to obtain the survey code from the input JSON.
     
     step_function_arn: This is the partial arn of the step function not including the specific 
-    name so that it can be build the full arn dynamically.
+    name so that it can be build the full arn dynamically. The account_id part of the arn will be substitued at run time
+    by the config loader inserting its own account_id.
     
     config_suffix: The rest of the file name of the config files after the survey code.
     
