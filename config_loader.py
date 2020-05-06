@@ -79,6 +79,8 @@ def lambda_handler(event, context):
         combined_input = {**json.loads(config_string), **event}
 
         # Setting File Path.
+        combined_input["final_output_location"] = combined_input["location"] \
+            + "0 - latest/"
         combined_input["location"] = combined_input["location"] + folder_id + "/"
 
         # ARN For SQS Queue.
@@ -94,7 +96,7 @@ def lambda_handler(event, context):
                                                        combined_input)
 
         client.start_execution(stateMachineArn=constructed_arn,
-                               name=str(random.getrandbits(128)),
+                               name=run_id + "-" + str(random.randint(1000, 9999)),
                                input=json.dumps(combined_input))
 
     except Exception as e:
