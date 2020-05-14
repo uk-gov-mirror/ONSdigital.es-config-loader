@@ -80,7 +80,7 @@ def lambda_handler(event, context):
 
         # Setting File Path.
         combined_input["final_output_location"] = combined_input["location"] \
-            + "0 - latest/"
+            + "0-latest/"
         combined_input["location"] = combined_input["location"] + folder_id + "/"
 
         # ARN For SQS Queue.
