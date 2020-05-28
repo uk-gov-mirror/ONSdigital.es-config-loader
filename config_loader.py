@@ -45,8 +45,6 @@ def lambda_handler(event, context):
         run_id = event['run_id']
         folder_id = event['run_id']
 
-        client = boto3.client('stepfunctions')
-
         # Initialising environment variables.
         schema = InputSchema()
         config, errors = schema.load(os.environ)
@@ -63,10 +61,10 @@ def lambda_handler(event, context):
         survey = event[payload_reference_name]
         logger.info("Validated environment parameters")
 
+        client = boto3.client('stepfunctions', region_name='eu-west-2')
         # Append survey to run_id.
         run_id = str(survey) + "-" + str(run_id)
         event['run_id'] = run_id
-
         # Create queue for run.
         queue_url = create_queue(run_id)
 
@@ -119,7 +117,9 @@ def creating_step_arn(arn_segment):
     :param arn_segment: Generic step function address - Type: String
     :return String: Step Function arn with the correct account_id added
     """
-    account_id = boto3.client('sts').get_caller_identity().get('Account')
+    account_id = boto3.client('sts',
+                              region_name='eu-west-2')\
+        .get_caller_identity().get('Account')
     arn_segment = arn_segment.replace("#{AWS::AccountId}", account_id)
 
     return arn_segment
@@ -144,7 +144,7 @@ def create_queue(run_id):
     :param run_id: Unique Run id for this run - Type: String
     :return queue_url: url of the newly created queue - Type: String
     """
-    sqsclient = boto3.client('sqs')
+    sqsclient = boto3.client('sqs', region_name='eu-west-2')
     queue = sqsclient.\
         create_queue(QueueName=run_id + '-results.fifo',
                      Attributes={'FifoQueue': 'True', 'VisibilityTimeout': '40'})
