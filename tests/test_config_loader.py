@@ -15,13 +15,6 @@ runtime_variables = {
     "RuntimeVariables": {}
 }
 
-incomplete_runtime_variables = {
-    "survey": "BMISG",
-    "run_id": "01021",
-    "checkpoint": 1,
-    "RuntimeVariables": {}
-}
-
 environment_variables = {
     "bucket_name": "mock-bucket",
     "step_function_arn": "mock-arn",
@@ -32,14 +25,7 @@ environment_variables = {
     "survey_arn_suffix": "-Results"
 }
 
-incomplete_environment_variables = {
-    "step_function_arn": "mock-arn",
-    "file_path": "configs/",
-    "payload_reference_name": "survey",
-    "config_suffix": "_config.json",
-    "survey_arn_prefix": "ES-",
-    "survey_arn_suffix": "-Results"
-}
+
 ##########################################################################################
 #                                     Generic                                            #
 ##########################################################################################
@@ -74,20 +60,16 @@ def test_key_error(which_lambda, which_environment_variables,
 
 
 @pytest.mark.parametrize(
-    "which_lambda,expected_message,assertion,"
-    "which_runtime_variables,which_environment_variables",
-    [
-     (lambda_wrangler_function,
+    "which_lambda,expected_message,assertion,which_runtime_variables",
+    [(lambda_wrangler_function,
       "Error validating environment parameters",
-      test_generic_library.wrangler_assert, runtime_variables,
-      incomplete_environment_variables)])
+      test_generic_library.wrangler_assert,
+      runtime_variables)])
 def test_value_error(which_lambda, expected_message, assertion,
-                     which_runtime_variables,
-                     which_environment_variables, ):
+                     which_runtime_variables):
     test_generic_library.value_error(
         which_lambda, expected_message, assertion,
-        runtime_variables=which_runtime_variables,
-        environment_variables=which_environment_variables)
+        runtime_variables=which_runtime_variables)
 
 
 @pytest.mark.parametrize(
@@ -150,7 +132,7 @@ def test_creating_step_arn():
 
 @mock.patch("es_aws_functions.aws_functions.read_from_s3")
 @mock.patch("config_loader.boto3.client")
-def test_passed_vars_overwrite(mock_client, mock_aws_functions):
+def test_config_loader_success(mock_client, mock_aws_functions):
     """
     Test the happy path through config loader
     Checks input data sent to start_execution
