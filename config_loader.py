@@ -51,14 +51,15 @@ def lambda_handler(event, context):
         if errors:
             raise ValueError(f"Error validating environment parameters: {errors}")
 
-        step_function_arn = config['step_function_arn']
         bucket_name = config['bucket_name']
+        config_suffix = config['config_suffix']
         file_path = config['file_path']
         payload_reference_name = config['payload_reference_name']
-        config_suffix = config['config_suffix']
+        step_function_arn = config['step_function_arn']
         survey_arn_prefix = config['survey_arn_prefix']
         survey_arn_suffix = config['survey_arn_suffix']
         survey = event[payload_reference_name]
+
         logger.info("Validated environment parameters")
 
         client = boto3.client('stepfunctions', region_name='eu-west-2')

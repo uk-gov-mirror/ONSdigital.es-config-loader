@@ -8,19 +8,19 @@ from moto import mock_sqs, mock_sts
 import config_loader as lambda_wrangler_function
 
 runtime_variables = {
+    "checkpoint": 1,
+    "run_id": "01021",
     "survey": "BMISG",
     "period": 201809,
-    "run_id": "01021",
-    "checkpoint": 1,
     "RuntimeVariables": {}
 }
 
 environment_variables = {
     "bucket_name": "mock-bucket",
-    "step_function_arn": "mock-arn",
+    "config_suffix": "_config.json",
     "file_path": "configs/",
     "payload_reference_name": "survey",
-    "config_suffix": "_config.json",
+    "step_function_arn": "mock-arn",
     "survey_arn_prefix": "ES-",
     "survey_arn_suffix": "-Results"
 }
@@ -48,6 +48,22 @@ def test_client_error(which_lambda, which_runtime_variables,
 
 
 @pytest.mark.parametrize(
+    "which_lambda,which_runtime_variables,which_environment_variables,mockable_function,"
+    "expected_message,assertion",
+    [
+        (lambda_wrangler_function, runtime_variables,
+         environment_variables, "config_loader.InputSchema",
+         "'Exception'", test_generic_library.wrangler_assert)
+    ])
+def test_general_error(which_lambda, which_runtime_variables,
+                       which_environment_variables, mockable_function,
+                       expected_message, assertion):
+    test_generic_library.general_error(which_lambda, which_runtime_variables,
+                                       which_environment_variables, mockable_function,
+                                       expected_message, assertion)
+
+
+@pytest.mark.parametrize(
     "which_lambda,which_environment_variables,expected_message,assertion",
     [
         (lambda_wrangler_function, environment_variables,
@@ -71,29 +87,9 @@ def test_value_error(which_lambda, expected_message, assertion,
         which_lambda, expected_message, assertion,
         runtime_variables=which_runtime_variables)
 
-
-@pytest.mark.parametrize(
-    "which_lambda,which_runtime_variables,which_environment_variables,mockable_function,"
-    "expected_message,assertion",
-    [
-        (lambda_wrangler_function, runtime_variables,
-         environment_variables, "config_loader.InputSchema",
-         "'Exception'", test_generic_library.wrangler_assert)
-    ])
-def test_general_error(which_lambda, which_runtime_variables,
-                       which_environment_variables, mockable_function,
-                       expected_message, assertion):
-    test_generic_library.general_error(which_lambda, which_runtime_variables,
-                                       which_environment_variables, mockable_function,
-                                       expected_message, assertion)
-
 ##########################################################################################
 #                                     Specific                                           #
 ##########################################################################################
-@mock_sqs
-def test_create_queue():
-    queue = lambda_wrangler_function.create_queue("123")
-    assert queue == "https://eu-west-2.queue.amazonaws.com/123456789012/123-results.fifo"
 
 
 def test_creating_survey_arn():
@@ -104,24 +100,10 @@ def test_creating_survey_arn():
     assert arn == "test:arn:ES-BMISG-Results"
 
 
-@pytest.mark.parametrize(
-    "checkpointfile,checkpoint,configfilename",
-    [
-     ("checkpointfile0", 0, "input_file"),
-     ("checkpointfile1", 1, "ingest"),
-     ("checkpointfile2", 2, "enrichment"),
-     ("checkpointfile3", 3, "strata"),
-     ("checkpointfile4", 4, "imputation_apply_factors"),
-     ("checkpointfile5", 5, "aggregation_combiner")
-    ])
-def test_set_checkpoint_start_file(checkpointfile,
-                                   checkpoint,
-                                   configfilename):
-    config = lambda_wrangler_function.\
-        set_checkpoint_start_file(checkpointfile,
-                                  checkpoint,
-                                  {"file_names": {}})
-    assert config["file_names"][configfilename] == checkpointfile
+@mock_sqs
+def test_create_queue():
+    queue = lambda_wrangler_function.create_queue("123")
+    assert queue == "https://eu-west-2.queue.amazonaws.com/123456789012/123-results.fifo"
 
 
 @mock_sts
@@ -156,3 +138,23 @@ def test_config_loader_success(mock_client, mock_aws_functions):
                         prepared_output = json.loads(f.read())
                     produced_output = json.loads(config[1]['input'])
                     assert(prepared_output == produced_output)
+
+
+@pytest.mark.parametrize(
+    "checkpointfile,checkpoint,configfilename",
+    [
+     ("checkpointfile0", 0, "input_file"),
+     ("checkpointfile1", 1, "ingest"),
+     ("checkpointfile2", 2, "enrichment"),
+     ("checkpointfile3", 3, "strata"),
+     ("checkpointfile4", 4, "imputation_apply_factors"),
+     ("checkpointfile5", 5, "aggregation_combiner")
+    ])
+def test_set_checkpoint_start_file(checkpointfile,
+                                   checkpoint,
+                                   configfilename):
+    config = lambda_wrangler_function.\
+        set_checkpoint_start_file(checkpointfile,
+                                  checkpoint,
+                                  {"file_names": {}})
+    assert config["file_names"][configfilename] == checkpointfile
