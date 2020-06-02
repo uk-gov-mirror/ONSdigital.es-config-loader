@@ -36,6 +36,12 @@ payload passed in.
       ...
     }
 
+The lambda response is a dict containing the name of the triggered step function execution.
+
+{
+  "execution_id": "sfn-execution-name"
+}
+
 ### Environment Variables:
 
     file_path: Used to specify the file path inside the bucket to the configs. e.g. /configs

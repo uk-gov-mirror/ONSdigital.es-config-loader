@@ -94,7 +94,7 @@ def lambda_handler(event, context):
                                                        combined_input['checkpoint'],
                                                        combined_input)
 
-        client.start_execution(stateMachineArn=constructed_arn,
+        sf_response = client.start_execution(stateMachineArn=constructed_arn,
                                name=run_id + "-" + str(random.randint(1000, 9999)),
                                input=json.dumps(combined_input))
 
@@ -108,7 +108,9 @@ def lambda_handler(event, context):
 
     logger.info("Successfully completed module: " + current_module)
 
-    return "done"
+    return {
+        "execution_id": sf_response["executionArn"].split(":")[-1]
+    }
 
 
 def creating_step_arn(arn_segment):
