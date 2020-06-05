@@ -10,12 +10,6 @@ from marshmallow import EXCLUDE, Schema, fields
 
 
 class EnvironmentSchema(Schema):
-    """
-    Schema to ensure that environment variables are present and in the correct format.
-    These variables are expected by the method, and it will fail to run if not provided.
-    :return: None
-    """
-
     class Meta:
         unknown = EXCLUDE
 
@@ -65,7 +59,6 @@ def lambda_handler(event, context):
         # Retrieve run_id before input validation.
         # Because it is used in exception handling.
         run_id = event['run_id']
-        folder_id = event['run_id']
 
         environment_variables = EnvironmentSchema().load(os.environ)
         runtime_variables = RuntimeSchema().load(event)
@@ -73,12 +66,14 @@ def lambda_handler(event, context):
 
         bucket_name = environment_variables['bucket_name']
         config_suffix = environment_variables['config_suffix']
+        folder_id = run_id
         file_path = environment_variables['file_path']
         payload_reference_name = environment_variables['payload_reference_name']
         step_function_arn = environment_variables['step_function_arn']
         survey_arn_prefix = environment_variables['survey_arn_prefix']
         survey_arn_suffix = environment_variables['survey_arn_suffix']
-        survey = event[payload_reference_name]
+        survey = runtime_variables[payload_reference_name]
+        logger.info("Retrieved configuration variables.")
 
         client = boto3.client('stepfunctions', region_name='eu-west-2')
         # Append survey to run_id.
@@ -92,7 +87,7 @@ def lambda_handler(event, context):
 
         # Get the rest of the config from s3.
         config_file_name = file_path + \
-            runtime_variables[payload_reference_name] + \
+            survey + \
             config_suffix
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
         combined_input = {**json.loads(config_string), **runtime_variables}
