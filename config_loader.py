@@ -69,7 +69,8 @@ def lambda_handler(event, context):
 
         environment_variables = EnvironmentSchema().load(os.environ)
         runtime_variables = RuntimeSchema().load(event)
-        logger.info("Validated environment parameters")
+        logger.info("Validated parameters")
+
         bucket_name = environment_variables['bucket_name']
         config_suffix = environment_variables['config_suffix']
         file_path = environment_variables['file_path']
@@ -82,7 +83,6 @@ def lambda_handler(event, context):
         client = boto3.client('stepfunctions', region_name='eu-west-2')
         # Append survey to run_id.
         run_id = str(survey) + "-" + str(run_id)
-        print(runtime_variables)
         runtime_variables['run_id'] = run_id
         # Create queue for run.
         queue_url = create_queue(run_id)

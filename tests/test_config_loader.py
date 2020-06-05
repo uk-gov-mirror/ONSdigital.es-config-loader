@@ -143,8 +143,6 @@ def test_config_loader_success(mock_client, mock_aws_functions):
                               encoding='utf-8') as f:
                         prepared_output = json.loads(f.read())
                     produced_output = json.loads(config[1]['input'])
-                    print(produced_output)
-                    print(prepared_output)
                     assert(prepared_output == produced_output)
 
 
