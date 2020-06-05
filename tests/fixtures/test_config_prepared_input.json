@@ -1,5 +1,5 @@
 {
-  "period": 201801,
+  "period": "201801",
   "period_column": "period",
   "calculation_type": "movement_calculation_a",
   "distinct_values": "region, strata",
@@ -23,7 +23,7 @@
       "aggregation_type": "sum",
       "cell_total_column": "county_total",
       "total_column": "Q608_total",
-      "period": 201809,
+      "period": "201809",
       "period_column": "period",
       "top1_column": "largest_contributor",
       "top2_column": "second_largest_contributor"
@@ -36,7 +36,7 @@
       "aggregation_type": "nunique",
       "cell_total_column": "ent_ref_count",
       "total_column": "enterprise_ref",
-      "period": 201809,
+      "period": "201809",
       "period_column": "period"
     }
   },

@@ -6,15 +6,23 @@ import time
 
 import boto3
 from es_aws_functions import aws_functions, exception_classes, general_functions
-from marshmallow import Schema, fields
+from marshmallow import EXCLUDE, Schema, fields
 
 
-class InputSchema(Schema):
+class EnvironmentSchema(Schema):
     """
     Schema to ensure that environment variables are present and in the correct format.
     These variables are expected by the method, and it will fail to run if not provided.
     :return: None
     """
+
+    class Meta:
+        unknown = EXCLUDE
+
+    def handle_error(self, e, data, **kwargs):
+        logging.error(f"Error validating environment params: {e}")
+        raise ValueError(f"Error validating environment params: {e}")
+
     step_function_arn = fields.Str(required=True)
     bucket_name = fields.Str(required=True)
     file_path = fields.Str(required=True)
@@ -22,6 +30,20 @@ class InputSchema(Schema):
     config_suffix = fields.Str(required=True)
     survey_arn_prefix = fields.Str(required=True)
     survey_arn_suffix = fields.Str(required=True)
+
+
+class RuntimeSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    def handle_error(self, e, data, **kwargs):
+        logging.error(f"Error validating runtime params: {e}")
+        raise ValueError(f"Error validating runtime params: {e}")
+
+    period = fields.Str(required=True)
+    checkpoint = fields.Int(required=True)
+    run_id = fields.Str(required=True)
+    survey = fields.Str(required=True)
 
 
 def lambda_handler(event, context):
@@ -45,37 +67,35 @@ def lambda_handler(event, context):
         run_id = event['run_id']
         folder_id = event['run_id']
 
-        # Initialising environment variables.
-        schema = InputSchema()
-        config, errors = schema.load(os.environ)
-        if errors:
-            raise ValueError(f"Error validating environment parameters: {errors}")
-
-        bucket_name = config['bucket_name']
-        config_suffix = config['config_suffix']
-        file_path = config['file_path']
-        payload_reference_name = config['payload_reference_name']
-        step_function_arn = config['step_function_arn']
-        survey_arn_prefix = config['survey_arn_prefix']
-        survey_arn_suffix = config['survey_arn_suffix']
-        survey = event[payload_reference_name]
-
+        environment_variables = EnvironmentSchema().load(os.environ)
+        runtime_variables = RuntimeSchema().load(event)
         logger.info("Validated environment parameters")
+        bucket_name = environment_variables['bucket_name']
+        config_suffix = environment_variables['config_suffix']
+        file_path = environment_variables['file_path']
+        payload_reference_name = environment_variables['payload_reference_name']
+        step_function_arn = environment_variables['step_function_arn']
+        survey_arn_prefix = environment_variables['survey_arn_prefix']
+        survey_arn_suffix = environment_variables['survey_arn_suffix']
+        survey = event[payload_reference_name]
 
         client = boto3.client('stepfunctions', region_name='eu-west-2')
         # Append survey to run_id.
         run_id = str(survey) + "-" + str(run_id)
-        event['run_id'] = run_id
+        print(runtime_variables)
+        runtime_variables['run_id'] = run_id
         # Create queue for run.
         queue_url = create_queue(run_id)
 
         # Add the new queue url to the event to pass downstream.
-        event['queue_url'] = queue_url
+        runtime_variables['queue_url'] = queue_url
 
         # Get the rest of the config from s3.
-        config_file_name = file_path + event[payload_reference_name] + config_suffix
+        config_file_name = file_path + \
+            runtime_variables[payload_reference_name] + \
+            config_suffix
         config_string = aws_functions.read_from_s3(bucket_name, config_file_name)
-        combined_input = {**json.loads(config_string), **event}
+        combined_input = {**json.loads(config_string), **runtime_variables}
 
         # Setting File Path.
         combined_input["final_output_location"] = combined_input["location"] \

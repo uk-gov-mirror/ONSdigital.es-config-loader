@@ -11,7 +11,7 @@ runtime_variables = {
     "checkpoint": 1,
     "run_id": "01021",
     "survey": "BMISG",
-    "period": 201809,
+    "period": "201809",
     "RuntimeVariables": {}
 }
 
@@ -52,7 +52,7 @@ def test_client_error(which_lambda, which_runtime_variables,
     "expected_message,assertion",
     [
         (lambda_wrangler_function, runtime_variables,
-         environment_variables, "config_loader.InputSchema",
+         environment_variables, "config_loader.EnvironmentSchema",
          "'Exception'", test_generic_library.wrangler_assert)
     ])
 def test_general_error(which_lambda, which_runtime_variables,
@@ -76,16 +76,22 @@ def test_key_error(which_lambda, which_environment_variables,
 
 
 @pytest.mark.parametrize(
-    "which_lambda,expected_message,assertion,which_runtime_variables",
+    "which_lambda,expected_message,assertion,"
+    "which_runtime_variables,which_environment_variables",
     [(lambda_wrangler_function,
-      "Error validating environment parameters",
+      "Error validating environment params",
       test_generic_library.wrangler_assert,
-      runtime_variables)])
+      runtime_variables, None),
+     (lambda_wrangler_function,
+      "Error validating runtime params",
+      test_generic_library.wrangler_assert,
+      {"run_id": "test"}, environment_variables)
+     ])
 def test_value_error(which_lambda, expected_message, assertion,
-                     which_runtime_variables):
+                     which_runtime_variables, which_environment_variables):
     test_generic_library.value_error(
         which_lambda, expected_message, assertion,
-        runtime_variables=which_runtime_variables)
+        which_runtime_variables, which_environment_variables)
 
 ##########################################################################################
 #                                     Specific                                           #
@@ -137,6 +143,8 @@ def test_config_loader_success(mock_client, mock_aws_functions):
                               encoding='utf-8') as f:
                         prepared_output = json.loads(f.read())
                     produced_output = json.loads(config[1]['input'])
+                    print(produced_output)
+                    print(prepared_output)
                     assert(prepared_output == produced_output)
 
 
