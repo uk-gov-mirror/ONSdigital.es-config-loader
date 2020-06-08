@@ -135,12 +135,13 @@ def test_config_loader_success(mock_client, mock_aws_functions):
                 mock_create_queue.return_value = "NotARealQueueUrl"
                 with mock.patch("config_loader.creating_step_arn") as mock_step_arn:
                     mock_step_arn.return_value = "1234"
-                    mock_client.return_value.start_execution.return_value = {
-                        "executionArn": ("arn:aws:states:region:account:execution:ES-BMIBRK-Results:"
-                                         "BMIBRK-20-04-19-11-32-55-3249")
-
-                    }
-                    resp  = lambda_wrangler_function.lambda_handler(runtime_variables, None)
+                    mock_client.return_value.\
+                        start_execution.return_value = \
+                        {"executionArn":
+                            ("arn:aws:states:region:account:execution:ES-BMIBRK-Results:"
+                                "BMIBRK-20-04-19-11-32-55-3249")}
+                    resp = lambda_wrangler_function.lambda_handler(runtime_variables,
+                                                                   None)
                     config = mock_client.return_value.start_execution.call_args
 
                     assert({'execution_id': 'BMIBRK-20-04-19-11-32-55-3249'} == resp)
@@ -150,8 +151,6 @@ def test_config_loader_success(mock_client, mock_aws_functions):
                         prepared_output = json.loads(f.read())
                     produced_output = json.loads(config[1]['input'])
                     assert(prepared_output == produced_output)
-
-
 
 
 @pytest.mark.parametrize(

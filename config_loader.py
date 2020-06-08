@@ -110,8 +110,9 @@ def lambda_handler(event, context):
                                                        combined_input)
 
         sf_response = client.start_execution(stateMachineArn=constructed_arn,
-                               name=run_id + "-" + str(random.randint(1000, 9999)),
-                               input=json.dumps(combined_input))
+                                             name=run_id + "-" +
+                                             str(random.randint(1000, 9999)),
+                                             input=json.dumps(combined_input))
 
     except Exception as e:
         error_message = general_functions.handle_exception(e, current_module,
