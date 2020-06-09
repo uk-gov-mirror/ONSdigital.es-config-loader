@@ -52,7 +52,7 @@ jsonpickle==1.2
 jsonpointer==2.0
 jsonschema==2.6.0
 markupsafe==1.1.1
-marshmallow==2.19.5
+marshmallow==3.6.0
 mccabe==0.6.1
 mock==3.0.5
 more-itertools==7.0.0 ; python_version > '2.7'
