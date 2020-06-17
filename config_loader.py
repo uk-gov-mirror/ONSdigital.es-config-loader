@@ -6,7 +6,7 @@ import time
 
 import boto3
 from es_aws_functions import aws_functions, exception_classes, general_functions
-from marshmallow import EXCLUDE, Schema, fields
+from marshmallow import EXCLUDE, INCLUDE, Schema, fields
 
 
 class EnvironmentSchema(Schema):
@@ -28,7 +28,7 @@ class EnvironmentSchema(Schema):
 
 class RuntimeSchema(Schema):
     class Meta:
-        unknown = EXCLUDE
+        unknown = INCLUDE
 
     def handle_error(self, e, data, **kwargs):
         logging.error(f"Error validating runtime params: {e}")
