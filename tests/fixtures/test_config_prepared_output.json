@@ -16,6 +16,7 @@
   "publishable_indicator": "publish",
   "explanation": "reason",
   "location": "Here01021/",
+  "RuntimeVariables": {},
   "aggA": {
     "RuntimeVariables": {
       "additional_aggregated_column": "region",
