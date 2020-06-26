@@ -128,7 +128,7 @@
         "Q606_other_gravel",
         "Q607_constructional_fill"
     ],
-    "sns_topic_arn": "arn:aws:sns:eu-west-2:209247769265:BMIResults",
+    "sns_topic_arn": "arn:aws:sns:eu-west-2:testy:BMIResults",
     "stage5_threshold": "0.1",
     "sum_columns": [
         {
