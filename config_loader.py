@@ -17,11 +17,11 @@ class EnvironmentSchema(Schema):
         logging.error(f"Error validating environment params: {e}")
         raise ValueError(f"Error validating environment params: {e}")
 
-    step_function_arn = fields.Str(required=True)
     bucket_name = fields.Str(required=True)
+    config_suffix = fields.Str(required=True)
     file_path = fields.Str(required=True)
     payload_reference_name = fields.Str(required=True)
-    config_suffix = fields.Str(required=True)
+    step_function_arn = fields.Str(required=True)
     survey_arn_prefix = fields.Str(required=True)
     survey_arn_suffix = fields.Str(required=True)
 
@@ -34,8 +34,9 @@ class RuntimeSchema(Schema):
         logging.error(f"Error validating runtime params: {e}")
         raise ValueError(f"Error validating runtime params: {e}")
 
-    period = fields.Str(required=True)
     checkpoint = fields.Int(required=True)
+    checkpoint_file = fields.Str(required=False)
+    period = fields.Str(required=True)
     run_id = fields.Str(required=True)
     survey = fields.Str(required=True)
 
@@ -79,11 +80,6 @@ def lambda_handler(event, context):
         # Append survey to run_id.
         run_id = str(survey) + "-" + str(run_id)
         runtime_variables['run_id'] = run_id
-        # Create queue for run.
-        queue_url = create_queue(run_id)
-
-        # Add the new queue url to the event to pass downstream.
-        runtime_variables['queue_url'] = queue_url
 
         # Get the rest of the config from s3.
         config_file_name = file_path + \
@@ -93,11 +89,17 @@ def lambda_handler(event, context):
         combined_input = {**json.loads(config_string), **runtime_variables}
 
         # Setting File Path.
-        combined_input["final_output_location"] = combined_input["location"] \
-            + "0-latest/"
-        combined_input["location"] = combined_input["location"] + folder_id + "/"
+        location = combined_input["location"]
+        full_location = location + "/" + folder_id + "/"
 
-        # ARN For SQS Queue.
+        combined_input["final_output_location"] = location + "/0-latest/disclosure_out"
+        combined_input["location"] = full_location
+
+        for x in combined_input["file_names"].keys():
+            combined_input["file_names"][x] = full_location +\
+                                              combined_input["file_names"][x]
+
+        # ARN.
         constructed_arn = creating_survey_arn(creating_step_arn(step_function_arn),
                                               survey,
                                               survey_arn_prefix,
