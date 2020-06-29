@@ -116,3 +116,6 @@ venv.bak/
 # DS_Store
 .DS_Store
 */DS_Store
+
+# Docker debugging with with VSCode (LU-5481)
+.devcontainer/
