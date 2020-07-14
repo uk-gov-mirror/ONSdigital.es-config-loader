@@ -9,6 +9,7 @@ import config_loader as lambda_wrangler_function
 
 runtime_variables = {
     "checkpoint": 1,
+    "checkpoint_file": "Sandy_Merged",
     "run_id": "01021",
     "survey": "BMISG",
     "period": "201809",
@@ -140,17 +141,18 @@ def test_config_loader_success(mock_client, mock_aws_functions):
                         {"executionArn":
                             ("arn:aws:states:region:account:execution:ES-BMIBRK-Results:"
                                 "BMIBRK-20-04-19-11-32-55-3249")}
-                    resp = lambda_wrangler_function.lambda_handler(runtime_variables,
-                                                                   None)
+                    response = lambda_wrangler_function.lambda_handler(runtime_variables,
+                                                                       None)
                     config = mock_client.return_value.start_execution.call_args
 
-                    assert({'execution_id': 'BMIBRK-20-04-19-11-32-55-3249'} == resp)
                     with open("tests/fixtures/test_config_prepared_output.json",
                               'r',
                               encoding='utf-8') as f:
                         prepared_output = json.loads(f.read())
                     produced_output = json.loads(config[1]['input'])
-                    assert(prepared_output == produced_output)
+
+    assert({'execution_id': 'BMIBRK-20-04-19-11-32-55-3249'} == response)
+    assert(prepared_output == produced_output)
 
 
 @pytest.mark.parametrize(

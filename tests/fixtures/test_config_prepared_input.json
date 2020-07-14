@@ -1,48 +1,163 @@
 {
-  "period": "201801",
-  "period_column": "period",
-  "calculation_type": "movement_calculation_a",
-  "distinct_values": "region, strata",
-  "questions_list": [
-    "Q601_asphalting_sand",
-    "Q602_building_soft_sand",
-    "Q603_concreting_sand",
-    "Q604_bituminous_gravel",
-    "Q605_concreting_gravel",
-    "Q606_other_gravel",
-    "Q607_constructional_fill"
-  ],
-  "disclosivity_marker": "disclosive",
-  "publishable_indicator": "publish",
-  "explanation": "reason",
-  "location": "Here",
-  "aggA": {
-    "RuntimeVariables": {
-      "additional_aggregated_column": "region",
-      "aggregated_column": "county",
-      "aggregation_type": "sum",
-      "cell_total_column": "county_total",
-      "total_column": "Q608_total",
-      "period": "201809",
-      "period_column": "period",
-      "top1_column": "largest_contributor",
-      "top2_column": "second_largest_contributor"
-    }
-  },
-  "aggB": {
-    "RuntimeVariables": {
-      "additional_aggregated_column": "region",
-      "aggregated_column": "county",
-      "aggregation_type": "nunique",
-      "cell_total_column": "ent_ref_count",
-      "total_column": "enterprise_ref",
-      "period": "201809",
-      "period_column": "period"
-    }
-  },
-  "total_column": "Q608_total",
-  "parent_column": "ent_ref_count",
-  "top1_column": "largest_contributor",
-  "top2_column": "second_largest_contributor",
-  "threshold": "3"
+    "additional_aggregated_column": "region",
+    "aggregated_column": "county",
+    "aggregation_type": [
+        "nunique",
+        "sum"
+    ],
+    "cell_total_column": [
+        "cell_total",
+        "ent_ref_count"
+    ],
+    "checkpoint": 1,
+    "disclosivity_marker": "disclosive",
+    "disclosure_stages": "1 2 5",
+    "distinct_values": [
+        "region",
+        "strata"
+    ],
+    "explanation": "reason",
+    "factors_parameters": {
+        "RuntimeVariables": {
+            "factors_type": "factors_calculation_a",
+            "first_imputation_factor": 0,
+            "first_threshold": 3,
+            "percentage_movement": true,
+            "region_column": "region",
+            "regional_mean": "third_imputation_factors",
+            "regionless_code": 14,
+            "second_imputation_factor": 1,
+            "second_threshold": 3,
+            "survey_column": "survey",
+            "third_threshold": 5
+        }
+    },
+    "file_names": {
+        "input_file": "",
+        "ingest": "ingest_out",
+        "enrichment": "enrichment_out",
+        "strata": "strata_out",
+        "imputation_calculate_movement": "imputation_calculate_movement_out",
+        "current_data": "current_data",
+        "previous_data": "previous_data",
+        "add_gb_region": "add_GB_region_out",
+        "imputation_calculate_means": "imputation_calculate_means_out",
+        "imputation_iqrs": "imputation_iqrs_out",
+        "imputation_atypicals": "imputation_atypicals_out",
+        "imputation_recalculate_means": "imputation_recalculate_means_out",
+        "imputation_calculate_factors": "imputation_calculate_factors_out",
+        "imputation_apply_factors": "imputation_out",
+        "aggregation_ent_ref": "aggregation_ent_ref_out",
+        "aggregation_by_column": "aggregation_column_out",
+        "aggregation_top2": "aggregation_top2_out",
+        "aggregation_combiner": "aggregation_out",
+        "disclosure": "disclosure_out"
+    },
+    "ingestion_parameters": {
+        "question_labels": {
+            "0601": "Q601_asphalting_sand",
+            "0602": "Q602_building_soft_sand",
+            "0603": "Q603_concreting_sand",
+            "0604": "Q604_bituminous_gravel",
+            "0605": "Q605_concreting_gravel",
+            "0606": "Q606_other_gravel",
+            "0607": "Q607_constructional_fill",
+            "0608": "Q608_total"
+        },
+        "survey_codes": {
+            "0066": "066",
+            "0076": "076"
+        },
+        "statuses": {
+            "Form Sent Out": 1,
+            "Clear": 2,
+            "Overridden": 2
+        }
+    },
+    "location": "BMI/Sand_And_Gravel/",
+    "lookups": {
+        "0": {
+            "file_name": "Sandy_Merged_lookup",
+            "columns_to_keep": [
+                "responder_id",
+                "county"
+            ],
+            "join_column": "responder_id",
+            "required": [
+                "county"
+            ]
+        },
+        "1": {
+            "file_name": "county_lookup",
+            "columns_to_keep": [
+                "county_name",
+                "region",
+                "county",
+                "marine"
+            ],
+            "join_column": "county",
+            "required": [
+                "region",
+                "marine"
+            ]
+        },
+        "2": {
+            "file_name": "Region_Lookup",
+            "columns_to_keep": [
+                "gor_code",
+                "region_name"
+            ],
+            "join_column": "gor_code",
+            "required": [
+                "region_name"
+            ]
+        }
+    },
+    "marine_mismatch_check": true,
+    "movement_type": "movement_calculation_a",
+    "period": "201809",
+    "period_column": "period",
+    "periodicity": "03",
+    "publishable_indicator": "publish",
+    "questions_list": [
+        "Q601_asphalting_sand",
+        "Q602_building_soft_sand",
+        "Q603_concreting_sand",
+        "Q604_bituminous_gravel",
+        "Q605_concreting_gravel",
+        "Q606_other_gravel",
+        "Q607_constructional_fill"
+    ],
+    "sns_topic_arn": "arn:aws:sns:eu-west-2:testy:BMIResults",
+    "stage5_threshold": "0.1",
+    "sum_columns": [
+        {
+            "column_name": "Q608_total",
+            "data": {
+                "Q601_asphalting_sand": "+",
+                "Q602_building_soft_sand": "+",
+                "Q603_concreting_sand": "+",
+                "Q604_bituminous_gravel": "+",
+                "Q605_concreting_gravel": "+",
+                "Q606_other_gravel": "+",
+                "Q607_constructional_fill": "+"
+            }
+        }
+    ],
+    "survey": "BMISG",
+    "survey_column": "survey",
+    "threshold": "3",
+    "top1_column": "largest_contributor",
+    "top2_column": "second_largest_contributor",
+    "total_columns": [
+        [
+            "enterprise_reference"
+        ],
+        [
+            "Q608_total"
+        ]
+    ],
+    "unique_identifier": [
+        "responder_id"
+    ]
 }
