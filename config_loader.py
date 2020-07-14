@@ -96,8 +96,15 @@ def lambda_handler(event, context):
         combined_input["location"] = full_location
 
         for x in combined_input["file_names"].keys():
-            combined_input["file_names"][x] = full_location +\
-                                              combined_input["file_names"][x]
+            if type(combined_input["file_names"][x]) == list:
+                new_names = []
+                for y in combined_input["file_names"][x]:
+                    new_names.append(full_location + y)
+                combined_input["file_names"][x] = new_names
+
+            else:
+                combined_input["file_names"][x] = full_location + \
+                                                  combined_input["file_names"][x]
 
         # ARN.
         constructed_arn = creating_survey_arn(creating_step_arn(step_function_arn),

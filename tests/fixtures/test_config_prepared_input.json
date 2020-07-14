@@ -51,7 +51,7 @@
         "aggregation_by_column": "aggregation_column_out",
         "aggregation_top2": "aggregation_top2_out",
         "aggregation_combiner": "aggregation_out",
-        "disclosure": "disclosure_out"
+        "disclosure": ["disclosure_out", "test_out"]
     },
     "ingestion_parameters": {
         "question_labels": {
@@ -74,7 +74,7 @@
             "Overridden": 2
         }
     },
-    "location": "BMI/Sand_And_Gravel/",
+    "location": "BMI/Sand_And_Gravel",
     "lookups": {
         "0": {
             "file_name": "Sandy_Merged_lookup",
