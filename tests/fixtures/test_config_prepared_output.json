@@ -33,25 +33,28 @@
         }
     },
     "file_names": {
-        "input_file": "BMI/Sand_And_Gravel//01021/",
+        "input_file": "BMI/Sand_And_Gravel/01021/",
         "ingest": "Sandy_Merged",
-        "enrichment": "BMI/Sand_And_Gravel//01021/enrichment_out",
-        "strata": "BMI/Sand_And_Gravel//01021/strata_out",
-        "imputation_calculate_movement": "BMI/Sand_And_Gravel//01021/imputation_calculate_movement_out",
-        "current_data": "BMI/Sand_And_Gravel//01021/current_data",
-        "previous_data": "BMI/Sand_And_Gravel//01021/previous_data",
-        "add_gb_region": "BMI/Sand_And_Gravel//01021/add_GB_region_out",
-        "imputation_calculate_means": "BMI/Sand_And_Gravel//01021/imputation_calculate_means_out",
-        "imputation_iqrs": "BMI/Sand_And_Gravel//01021/imputation_iqrs_out",
-        "imputation_atypicals": "BMI/Sand_And_Gravel//01021/imputation_atypicals_out",
-        "imputation_recalculate_means": "BMI/Sand_And_Gravel//01021/imputation_recalculate_means_out",
-        "imputation_calculate_factors": "BMI/Sand_And_Gravel//01021/imputation_calculate_factors_out",
-        "imputation_apply_factors": "BMI/Sand_And_Gravel//01021/imputation_out",
-        "aggregation_ent_ref": "BMI/Sand_And_Gravel//01021/aggregation_ent_ref_out",
-        "aggregation_by_column": "BMI/Sand_And_Gravel//01021/aggregation_column_out",
-        "aggregation_top2": "BMI/Sand_And_Gravel//01021/aggregation_top2_out",
-        "aggregation_combiner": "BMI/Sand_And_Gravel//01021/aggregation_out",
-        "disclosure": "BMI/Sand_And_Gravel//01021/disclosure_out"
+        "enrichment": "BMI/Sand_And_Gravel/01021/enrichment_out",
+        "strata": "BMI/Sand_And_Gravel/01021/strata_out",
+        "imputation_calculate_movement": "BMI/Sand_And_Gravel/01021/imputation_calculate_movement_out",
+        "current_data": "BMI/Sand_And_Gravel/01021/current_data",
+        "previous_data": "BMI/Sand_And_Gravel/01021/previous_data",
+        "add_gb_region": "BMI/Sand_And_Gravel/01021/add_GB_region_out",
+        "imputation_calculate_means": "BMI/Sand_And_Gravel/01021/imputation_calculate_means_out",
+        "imputation_iqrs": "BMI/Sand_And_Gravel/01021/imputation_iqrs_out",
+        "imputation_atypicals": "BMI/Sand_And_Gravel/01021/imputation_atypicals_out",
+        "imputation_recalculate_means": "BMI/Sand_And_Gravel/01021/imputation_recalculate_means_out",
+        "imputation_calculate_factors": "BMI/Sand_And_Gravel/01021/imputation_calculate_factors_out",
+        "imputation_apply_factors": "BMI/Sand_And_Gravel/01021/imputation_out",
+        "aggregation_ent_ref": "BMI/Sand_And_Gravel/01021/aggregation_ent_ref_out",
+        "aggregation_by_column": "BMI/Sand_And_Gravel/01021/aggregation_column_out",
+        "aggregation_top2": "BMI/Sand_And_Gravel/01021/aggregation_top2_out",
+        "aggregation_combiner": "BMI/Sand_And_Gravel/01021/aggregation_out",
+        "disclosure": [
+            "BMI/Sand_And_Gravel/01021/disclosure_out",
+            "BMI/Sand_And_Gravel/01021/test_out"
+        ]
     },
     "ingestion_parameters": {
         "question_labels": {
@@ -74,7 +77,7 @@
             "Overridden": 2
         }
     },
-    "location": "BMI/Sand_And_Gravel//01021/",
+    "location": "BMI/Sand_And_Gravel/01021/",
     "lookups": {
         "0": {
             "file_name": "Sandy_Merged_lookup",
@@ -160,8 +163,8 @@
     "unique_identifier": [
         "responder_id"
     ],
+    "checkpoint_file": "Sandy_Merged",
     "run_id": "BMISG-01021",
     "RuntimeVariables": {},
-    "checkpoint_file": "Sandy_Merged",
-    "final_output_location": "BMI/Sand_And_Gravel//0-latest/disclosure_out"
+    "final_output_location": "BMI/Sand_And_Gravel/0-latest/disclosure_out"
 }
