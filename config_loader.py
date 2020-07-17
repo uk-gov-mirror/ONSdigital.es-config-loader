@@ -34,7 +34,7 @@ class RuntimeSchema(Schema):
         logging.error(f"Error validating runtime params: {e}")
         raise ValueError(f"Error validating runtime params: {e}")
 
-    checkpoint = fields.Int(required=True)
+    checkpoint = fields.Str(required=True)
     checkpoint_file = fields.Str(required=False)
     period = fields.Str(required=True)
     run_id = fields.Str(required=True)
@@ -194,20 +194,19 @@ def set_checkpoint_start_file(checkpoint_file, checkpoint_id, config):
     :return config: a version of the config with the "in_file_name" section altered
         - Type: String/JSON
     """
-
+    file = ''
+    last_file_name = ''
+    # Retrieve the filename before the chosen checkpoint
+    for filename in config['file_names']:
+        if last_file_name == '':
+            last_file_name = filename
+        if checkpoint_id in filename:
+            file = last_file_name
+            break
+        else:
+            last_file_name = filename
+    # set to be the checkpoint_file we are using
     if checkpoint_file is not None and checkpoint_file != "":
-
-        if checkpoint_id == 0:
-            config["file_names"]["input_file"] = checkpoint_file
-        elif checkpoint_id == 1:
-            config["file_names"]["ingest"] = checkpoint_file
-        elif checkpoint_id == 2:
-            config["file_names"]["enrichment"] = checkpoint_file
-        elif checkpoint_id == 3:
-            config["file_names"]["strata"] = checkpoint_file
-        elif checkpoint_id == 4:
-            config["file_names"]["imputation_apply_factors"] = checkpoint_file
-        elif checkpoint_id == 5:
-            config["file_names"]["aggregation_combiner"] = checkpoint_file
+        config["file_names"][file] = checkpoint_file
 
     return config

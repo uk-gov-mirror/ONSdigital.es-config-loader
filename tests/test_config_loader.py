@@ -1,3 +1,4 @@
+import copy
 import json
 from unittest import mock
 
@@ -8,7 +9,7 @@ from moto import mock_sqs, mock_sts
 import config_loader as lambda_wrangler_function
 
 runtime_variables = {
-    "checkpoint": 1,
+    "checkpoint": "enrichment",
     "checkpoint_file": "Sandy_Merged",
     "run_id": "01021",
     "survey": "BMISG",
@@ -26,7 +27,28 @@ environment_variables = {
     "survey_arn_suffix": "-Results"
 }
 
-
+file_names = {"file_names": {
+    "input_file": "",
+    "ingest": "ingest_out",
+    "enrichment": "enrichment_out",
+    "strata": "strata_out",
+    "imputation_calculate_movement": "imputation_calculate_movement_out",
+    "current_data": "current_data",
+    "previous_data": "previous_data",
+    "add_gb_region": "add_GB_region_out",
+    "imputation_calculate_means": "imputation_calculate_means_out",
+    "imputation_iqrs": "imputation_iqrs_out",
+    "imputation_atypicals": "imputation_atypicals_out",
+    "imputation_recalculate_means": "imputation_recalculate_means_out",
+    "imputation_calculate_factors": "imputation_calculate_factors_out",
+    "imputation_apply_factors": "imputation_out",
+    "aggregation_ent_ref": "aggregation_ent_ref_out",
+    "aggregation_by_column": "aggregation_column_out",
+    "aggregation_top2": "aggregation_top2_out",
+    "aggregation_combiner": "aggregation_out",
+    "disclosure": "disclosure_out"
+  }
+}
 ##########################################################################################
 #                                     Generic                                            #
 ##########################################################################################
@@ -158,18 +180,19 @@ def test_config_loader_success(mock_client, mock_aws_functions):
 @pytest.mark.parametrize(
     "checkpointfile,checkpoint,configfilename",
     [
-     ("checkpointfile0", 0, "input_file"),
-     ("checkpointfile1", 1, "ingest"),
-     ("checkpointfile2", 2, "enrichment"),
-     ("checkpointfile3", 3, "strata"),
-     ("checkpointfile4", 4, "imputation_apply_factors"),
-     ("checkpointfile5", 5, "aggregation_combiner")
+     ("checkpointfile0",  "ingest",  "input_file"),
+     ("checkpointfile1",  "enrichment",  "ingest"),
+     ("checkpointfile2",  "strata",  "enrichment"),
+     ("checkpointfile3",  "imputation",  "strata"),
+     ("checkpointfile4",  "aggregation",  "imputation_apply_factors"),
+     ("checkpointfile5",  "disclosure",  "aggregation_combiner")
     ])
 def test_set_checkpoint_start_file(checkpointfile,
                                    checkpoint,
                                    configfilename):
+    config_file_names = copy.deepcopy(file_names)
     config = lambda_wrangler_function.\
         set_checkpoint_start_file(checkpointfile,
                                   checkpoint,
-                                  {"file_names": {}})
+                                  config_file_names)
     assert config["file_names"][configfilename] == checkpointfile
