@@ -9,7 +9,7 @@
         "cell_total",
         "ent_ref_count"
     ],
-    "checkpoint": 1,
+    "checkpoint": "enrichment",
     "disclosivity_marker": "disclosive",
     "disclosure_stages": "1 2 5",
     "distinct_values": [
