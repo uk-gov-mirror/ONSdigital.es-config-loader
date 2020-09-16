@@ -35,7 +35,7 @@ class RuntimeSchema(Schema):
         raise ValueError(f"Error validating runtime params: {e}")
 
     checkpoint = fields.Str(required=True)
-    checkpoint_file = fields.Str(required=False)
+    checkpoint_file = fields.Str()
     period = fields.Str(required=True)
     run_id = fields.Str(required=True)
     survey = fields.Str(required=True)
