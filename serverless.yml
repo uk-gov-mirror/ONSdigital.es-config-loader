@@ -39,6 +39,7 @@ functions:
       app: results
     environment:
       bucket_name: spp-results-${self:custom.environment}
+      environment: ${self:custom.environment}
       step_function_arn: arn:aws:states:eu-west-2:#{AWS::AccountId}:stateMachine
       file_path: configs/
       payload_reference_name: survey

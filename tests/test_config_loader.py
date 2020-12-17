@@ -20,6 +20,7 @@ runtime_variables = {
 environment_variables = {
     "bucket_name": "mock-bucket",
     "config_suffix": "_config.json",
+    "environment": "test-environment",
     "file_path": "configs/",
     "payload_reference_name": "survey",
     "step_function_arn": "mock-arn",

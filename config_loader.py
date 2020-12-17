@@ -19,6 +19,7 @@ class EnvironmentSchema(Schema):
 
     bucket_name = fields.Str(required=True)
     config_suffix = fields.Str(required=True)
+    environment = fields.Str(Required=True)
     file_path = fields.Str(required=True)
     payload_reference_name = fields.Str(required=True)
     step_function_arn = fields.Str(required=True)
@@ -51,21 +52,19 @@ def lambda_handler(event, context):
     """
     current_module = "Config Loader"
     error_message = ""
-    logger = general_functions.get_logger()
+
     # Define run_id outside of try block.
     run_id = 0
     try:
-        logger.info("Running Config loader")
         # Retrieve run_id before input validation.
         # Because it is used in exception handling.
         run_id = event['run_id']
-
         environment_variables = EnvironmentSchema().load(os.environ)
         runtime_variables = RuntimeSchema().load(event)
-        logger.info("Validated parameters")
 
         bucket_name = environment_variables['bucket_name']
         config_suffix = environment_variables['config_suffix']
+        environment = environment_variables['environment']
         folder_id = run_id
         file_path = environment_variables['file_path']
         payload_reference_name = environment_variables['payload_reference_name']
@@ -73,6 +72,21 @@ def lambda_handler(event, context):
         survey_arn_prefix = environment_variables['survey_arn_prefix']
         survey_arn_suffix = environment_variables['survey_arn_suffix']
         survey = runtime_variables[payload_reference_name]
+
+    except Exception as e:
+        error_message = general_functions.handle_exception(e, current_module,
+                                                           run_id, context)
+        raise exception_classes.LambdaFailure(error_message)
+
+    try:
+        logger = general_functions.get_logger(survey, current_module, environment, run_id)
+    except Exception as e:
+        error_message = general_functions.handle_exception(e, current_module,
+                                                           run_id, context)
+        raise exception_classes.LambdaFailure(error_message)
+
+    try:
+
         logger.info("Retrieved configuration variables.")
 
         client = boto3.client('stepfunctions', region_name='eu-west-2')
