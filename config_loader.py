@@ -61,7 +61,6 @@ def lambda_handler(event, context):
         run_id = event['run_id']
         environment_variables = EnvironmentSchema().load(os.environ)
         runtime_variables = RuntimeSchema().load(event)
-        logger.info("Validated parameters")
 
         bucket_name = environment_variables['bucket_name']
         config_suffix = environment_variables['config_suffix']
@@ -75,7 +74,7 @@ def lambda_handler(event, context):
         survey = runtime_variables[payload_reference_name]
 
     except Exception as e:
-        print("ERROR: Failed to initialise environment variables")
+        print("ERROR: Failed to initialise environment/runtime variables")
         print(str(e))
         raise exception_classes.LambdaFailure(error_message)
 
