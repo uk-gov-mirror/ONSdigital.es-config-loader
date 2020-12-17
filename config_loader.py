@@ -74,15 +74,15 @@ def lambda_handler(event, context):
         survey = runtime_variables[payload_reference_name]
 
     except Exception as e:
-        print("ERROR: Failed to initialise environment/runtime variables")
-        print(str(e))
+        error_message = general_functions.handle_exception(e, current_module,
+                                                           run_id, context)
         raise exception_classes.LambdaFailure(error_message)
 
     try:
         logger = general_functions.get_logger(survey, current_module, environment, run_id)
     except Exception as e:
-        print("ERROR: Failed to initialise logger")
-        print(str(e))
+        error_message = general_functions.handle_exception(e, current_module,
+                                                           run_id, context)
         raise exception_classes.LambdaFailure(error_message)
 
     try:
