@@ -39,6 +39,7 @@ gitpython==2.1.11
 idna==2.8
 imagesize==1.1.0
 importlib-metadata==0.18
+immutbles==0.14
 isort==4.3.21
 ipdb==0.12
 ipython-genutils==0.2.0
