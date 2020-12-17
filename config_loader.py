@@ -79,8 +79,7 @@ def lambda_handler(event, context):
         raise exception_classes.LambdaFailure(error_message)
 
     try:
-        logger = general_functions.get_logger(survey, current_module, environment,
-                                                  run_id)
+        logger = general_functions.get_logger(survey, current_module, environment, run_id)
     except Exception as e:
         print("ERROR: Failed to initialise logger")
         print(str(e))
